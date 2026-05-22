@@ -339,37 +339,37 @@ export default function Chat() {
               GPT-4.1
             </div>
 
-            <div className={styles.topbarDivider} />
+            {/* <div className={styles.topbarDivider} /> */}
 
             {/* Search in conversation (placeholder) */}
-            <button className={styles.iconBtn} data-tip="Search" aria-label="Search conversation">
+            {/* <button className={styles.iconBtn} data-tip="Search" aria-label="Search conversation">
               <SearchIcon />
-            </button>
+            </button> */}
 
             {/* Share */}
-            <button className={styles.iconBtn} data-tip="Share" aria-label="Share conversation">
+            {/* <button className={styles.iconBtn} data-tip="Share" aria-label="Share conversation">
               <ShareIcon />
-            </button>
+            </button> */}
 
             {/* Export */}
-            <button
+            {/* <button
               className={styles.iconBtn}
               data-tip="Export"
               aria-label="Export conversation"
               onClick={handleExport}
             >
               <DownloadIcon />
-            </button>
+            </button> */}
 
             {/* Clear */}
-            <button
+            {/* <button
               className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
               data-tip="Clear chat"
               aria-label="Clear conversation"
               onClick={handleClear}
             >
               <ClearIcon />
-            </button>
+            </button> */}
 
             <div className={styles.topbarDivider} />
 
@@ -456,9 +456,9 @@ export default function Chat() {
               onKeyDown={onKeyDown}
               disabled={streaming}
             />
-            <button className={styles.micBtn} aria-label="Voice input" tabIndex={-1} type="button">
+            {/* <button className={styles.micBtn} aria-label="Voice input" tabIndex={-1} type="button">
               <MicIcon />
-            </button>
+            </button> */}
             <button
               className={styles.sendBtn}
               onClick={send}
