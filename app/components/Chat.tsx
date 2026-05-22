@@ -115,12 +115,11 @@ function SearchIcon() {
 export default function Chat() {
   const {
     conversations,
-    active,
     activeId,
     setActiveId,
     newConversation,
-    updateMessages,
     deleteConversation,
+    refreshConversations,
   } = useConversations();
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -130,10 +129,16 @@ export default function Chat() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Load messages from DB whenever the active conversation changes
   useEffect(() => {
-    setMessages(active?.messages ?? []);
+    setMessages([]);
     setInput("");
-  }, [activeId, active]);
+    if (!activeId) return;
+    fetch(`/api/conversations/${activeId}/messages`)
+      .then((r) => r.json())
+      .then((rows: Message[]) => setMessages(rows))
+      .catch(() => {});
+  }, [activeId]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -146,8 +151,8 @@ export default function Chat() {
     ta.style.height = `${ta.scrollHeight}px`;
   }
 
-  const handleNew = useCallback(() => {
-    newConversation();
+  const handleNew = useCallback(async () => {
+    await newConversation();
     setSidebarOpen(false);
   }, [newConversation]);
 
@@ -159,10 +164,11 @@ export default function Chat() {
     [setActiveId]
   );
 
-  function handleClear() {
+  async function handleClear() {
     if (!activeId || messages.length === 0) return;
+    await fetch(`/api/conversations/${activeId}/messages`, { method: "DELETE" });
     setMessages([]);
-    updateMessages(activeId, []);
+    await refreshConversations();
   }
 
   function handleExport() {
@@ -183,7 +189,7 @@ export default function Chat() {
     const text = input.trim();
     if (!text || streaming) return;
 
-    const convId = activeId ?? newConversation();
+    const convId = activeId ?? await newConversation();
     const updated: Message[] = [...messages, { role: "user", content: text }];
     setMessages(updated);
     setInput("");
@@ -197,7 +203,7 @@ export default function Chat() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: updated }),
+        body: JSON.stringify({ messages: updated, sessionId: convId }),
       });
 
       if (!res.body) throw new Error("No body");
@@ -218,7 +224,8 @@ export default function Chat() {
         }
       }
 
-      updateMessages(convId, [...updated, { role: "assistant", content: full }]);
+      // Refresh sidebar so the derived title appears after the first message
+      refreshConversations().catch(() => {});
     } catch {
       setMessages((p) =>
         p.map((m, i) =>
