@@ -15,9 +15,6 @@ docker compose up --build
 |---|---|
 | Chat | http://localhost:3000 |
 | Dashboard | http://localhost:3000/dashboard |
-| DB UI (CloudBeaver) | http://localhost:8080 |
-
-> CloudBeaver first run: complete the setup wizard quickly (it times out). Connect with host `db`, user/password/database `ollive`.
 
 ## Architecture
 
